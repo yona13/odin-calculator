@@ -1,0 +1,135 @@
+body {
+    background-color: #fcf7f8;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+}
+
+@font-face {
+    font-family: 'digital-font';
+    src: url("./fonts/digital-7.ttf");
+}
+
+:root {
+    --info-font-size: 6px;
+    --screen-font-size: 36px;
+    --screen-font-width: 20px;
+    --button-font-size: 18px;
+    --button-space: 5px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 100px;
+}
+
+.calculator {
+    border-radius: 8px;
+    background-color: #ced3dc;
+    margin-top: 50px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.screen {
+    background-color: #a8c64e;
+    color: #3c412c;
+    font-family: "digital-font";
+    font-size: var(--screen-font-size);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.info {
+    font-size: var(--info-font-size);
+    min-height: var(--info-font-size);
+    background-color: inherit;
+    width: 96%;
+    margin-bottom: 6px;
+}
+
+.input,
+.result {
+    background-color: #8da741;
+    min-height: var(--screen-font-size);
+    width: 96%;
+    margin-bottom: 6px;
+}
+
+.input {
+    text-align: left;
+    display: flex;
+    justify-content: start;
+}
+
+.result {
+    text-align: right;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: var(--button-space);
+}
+
+.data-cell,
+.function-cell,
+.idle-prompt-cell {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    text-align: right;
+    padding: 0;
+    min-width: var(--screen-font-width);
+    max-width: var(--screen-font-width);
+}
+
+.ascii {
+    margin: -5px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.idle-prompt-cell {
+    text-align: left;
+}
+
+.numbers,
+.functions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--button-space);
+    margin-top: var(--button-space);
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--button-space);
+}
+
+.numeric,
+.cancel {
+    font-size: var(--button-font-size);
+    text-align: center;
+    width: 60px;
+    height: 50px
+}
+
+.cancel {
+    background-color: #ff6600;
+}
+
+.variable {
+    font-family: cursive
+}
+
+.footer {
+    padding: 20px;
+}

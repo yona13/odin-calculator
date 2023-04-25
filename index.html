@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <script src="./scripts/calculator.js" defer></script>
+    <script src="./scripts/main.js" defer></script>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="calculator">
+            <div class="screen">
+                <div class="info"></div>
+                <div class="input"></div>
+                <div class="result"></div>
+            </div>
+            <div class="controls">
+                <div class="numbers">
+                    <div class="row one">
+                        <button class="numeric" id="digit-7">7</button>
+                        <button class="numeric" id="digit-8">8</button>
+                        <button class="numeric" id="digit-9">9</button>
+                    </div>
+                    <div class="row two">
+                        <button class="numeric" id="digit-4">4</button>
+                        <button class="numeric" id="digit-5">5</button>
+                        <button class="numeric" id="digit-6">6</button>
+                    </div>
+                    <div class="row three">
+                        <button class="numeric" id="digit-1">1</button>
+                        <button class="numeric" id="digit-2">2</button>
+                        <button class="numeric" id="digit-3">3</button>
+                    </div>
+                    <div class="row four">
+                        <button class="numeric" id="digit-0">0</button>
+                        <button class="numeric" id="decimal-point">.</button>
+                        <button class="numeric" id="E">&#215;10<sup><a class="variable">x</a></sup></button>
+                    </div>
+                </div>
+                <div class="functions">
+                    <div class="row one">
+                        <button class="cancel" id="delete">DEL</button>
+                        <button class="cancel" id="clear">AC</button>
+                    </div>
+                    <div class="row two">
+                        <button class="numeric" id="multiply">&#215;</button>
+                        <button class="numeric" id="divide">&#247;</button>
+                    </div>
+                    <div class="row three">
+                        <button class="numeric" id="add">+</button>
+                        <button class="numeric" id="minus">-</button>
+                    </div>
+                    <div class="row four">
+                        <button class="numeric" id="answer">ANS</button>
+                        <button class="numeric" id="equals">=</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">Yona Sandt &#169; 2023</div>
+    </div>
+</body>
+</html>
