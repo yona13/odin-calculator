@@ -13,6 +13,7 @@ body {
     --info-font-size: 6px;
     --screen-font-size: 36px;
     --screen-font-width: 20px;
+    --input-obj-min-height: 41px;
     --button-font-size: 18px;
     --button-space: 5px;
 }
@@ -60,6 +61,7 @@ body {
     min-height: var(--screen-font-size);
     width: 96%;
     margin-bottom: 6px;
+    height: 41px;
 }
 
 .input {
@@ -69,6 +71,8 @@ body {
 }
 
 .result {
+    padding-top: 6px;
+    padding-bottom: 0px;
     text-align: right;
 }
 
@@ -78,25 +82,17 @@ body {
     gap: var(--button-space);
 }
 
+/* .function-cell, */
 .data-cell,
-.function-cell,
 .idle-prompt-cell {
-    margin-top: 2px;
-    margin-bottom: 2px;
-    text-align: right;
     padding: 0;
+}
+
+.idle-prompt-cell {
+    margin-top: 6px;
+    text-align: left;
     min-width: var(--screen-font-width);
     max-width: var(--screen-font-width);
-}
-
-.ascii {
-    margin: -5px;
-    margin-left: 2px;
-    margin-right: 2px;
-}
-
-.idle-prompt-cell {
-    text-align: left;
 }
 
 .numbers,

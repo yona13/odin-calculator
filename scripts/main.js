@@ -13,196 +13,90 @@ function getDigit(value) {
     return null;
 }
 
-/* Update Input Display Function */
-function updateInputCells() {
-    input.innerHTML = "";
-    for (var i = inputCells.length - 1; i >= 0; i--) {
-        const obj = inputCells[i];
-        input.appendChild(obj);
-    }
-
-    // Finally append idle-prompt object
-    input.appendChild(idlePrompt);
-    decimalPressed = false;
+function changeMargin(enlarge=true) {
+    inputCell.setAttribute("style", `margin: ${enlarge ? 6 : 0}px 0px`);
 }
 
-/* Can add Input Cell Function */
-function canAddInputCell() {
-    let totalWidth = 0;
-    for (const obj of inputCells) totalWidth += obj.className.includes("ascii") ? 26 : 20;
-    return totalWidth < MAX_WIDTH;
+/* Can Add Input Character */
+function canAddCharacter() {
+    return inputCell.offsetWidth < MAX_WIDTH;
 }
 
-/* Add Input Cell Function */
-function addInputCell(value) {
-    const newCell = document.createElement("div");
-    newCell.className = "data-cell";
-    newCell.textContent = value + "  ";
-    inputCells.unshift(newCell);
-    updateInputCells();
-}
-
-/* Can add Decimal Point Function */
-function canAddDecimal() {
-    if (inputCells.length > 0) return !decimalPressed && inputCells[0].className == "data-cell";
-    return false;
-}
-
-/* Add Decimal Point Function */
-function addDecimal() {
-    if (canAddDecimal()) {
-        inputCells[0].textContent = inputCells[0].textContent.trim() + ".";
-        updateInputCells();
-        decimalPressed = true;
-    }
-}
-
-/* Is Function Key Function */
-function isFunctionKey(value, isString=false) {
-    if (!isString) return FUNCTION_KEYS.includes(value);
-    else return FUNCTION_STRS.includes(value);
-}
-
-/* Add Function Cell Function */
-function addFunctionCell(value) {
-    const newCell = document.createElement("div");
-    newCell.className = "function-cell";
+/* Add Function Character Function */
+function addFunctionCharacter(value) {
     if (value == "*" || value == "/") {
-        newCell.className += " ascii";
-        newCell.textContent = String.fromCharCode(value == "*" ? 215 : 247);
-    } else newCell.textContent = value;
-    inputCells.unshift(newCell);
-    updateInputCells();
+        changeMargin(false);
+        return String.fromCharCode(value == "*" ? 215 : 247);
+    } else return value;
 }
 
-/* Remove Input Cell Function */
-function removeInputCell(index=0) {
-    if (inputCells.length > 0) {
-        if (inputCells[index].textContent.includes(".")) inputCells[index].textContent = parseInt(inputCells[index].textContent) + " ";
-        else {
-            inputCells.splice(index, 1);
-            updateInputCells();
-        }
-    }
+/* Remove String Character from Input */
+function backspace(index=0) {
+    if (inputText.charCodeAt(inputCell.textContent.length - 1 - index) == 215 || inputCell.textContent.charCodeAt(inputCell.textContent.length - 1 - index) == 247) 
+        changeMargin();
+    inputText = inputText.substring(0, inputText.length - 1 - index);
+    updateInput();
 }
 
-/* Clear Input Cells Function */
-function clearInputCells() {
-    inputCells = [];
-    updateInputCells();
+/* Clear Function */
+function clear() {
+    changeMargin();
+    inputText = "";
+    solution = 0;
+    inputCell.textContent = "";
     result.textContent = "";
 }
 
-/* Check Syntax Function */
-function checkSyntax() {
-    return true;
+/* Update Input Function */
+function updateInput() {
+    inputCell.textContent = inputText;
 }
 
-function parseOperations(operation) {
-    if (typeof(operation.b) == "number") {
-        if (operation.func == "+")
-            return add(operation.a, operation.b);
-        else if (operation.func == "-")
-            return subtract(operation.a, operation.b);
-        else if (operation.func == "*")
-            return multiply([operation.a, operation.b]);
-        else if (operation.func == "/")
-            return Math.abs(operation.b) > 0 ? multiply([operation.a, 1 / operation.b]) : "NOT DEFINED";
-    } else {
-        return "MATHS ERROR";
-    }
-}
-
-function createOperations(from) {
-    let currentValue = "";
-    let operation = {a: 0, func: "", b: 0};
-
-    for (var i = from; i >= 0; i--) {
-        const obj = inputCells[i];
-        // Check if Content is a Number
-        if (obj.className == "data-cell") currentValue += obj.textContent.trim();
-        
-        // Otherwise, it would be a Function
-        else {
-            if (operation.func === "") {
-                console.log(currentValue);
-                operation.a = parseFloat(currentValue);
-                currentValue = "";
-                const charCode = obj.textContent.charCodeAt(0);
-                
-                // Check if Function is + or -
-                if (isFunctionKey(obj.textContent)) {
-                    operation.func = obj.textContent;
-                } 
-                
-                // Check if Function is 
-                else if (charCode == 215 || charCode == 247) {
-                    operation.func = charCode == 215 ? "*" : "/";
-                }
-            } else {
-                operation.b = createOperations(i);
-                break;
-            }
-        }
-    }
-
-    if (operation.b == 0) {
-        operation.b = parseInt(currentValue);
-    }
-
-    console.log(`Input: ${operation.a} ${operation.func} ${operation.b}`);
-    return operation;
-}
-
-/* Evaluate Input Cells Function */
-function evaluate() {
-    if (checkSyntax()) {
-        shouldReset = true;
-        console.log(`Length: ${inputCells.length - 1}`)
-        result.textContent = parseOperations(createOperations(inputCells.length - 1));
-    } else {
-        result.textContent = "Syntax ERROR"
-    }
+/* Update Result Function */
+function updateResult() {
+    console.log(inputText)
+    solution = evaluate(inputText + "|", answer);
+    shouldReset = !isNaN(solution);
+    if (shouldReset) answer = solution;
+    result.textContent = solution;
 }
 
 /* Keydown Event Listener Function */
 function keypressListener(event) {
     if (shouldReset) {
-        clearInputCells();
+        clear();
         shouldReset = false;
     }
 
-    // console.log(event.key);
-
     // Numeric key Pressed
-    if (!isNaN(event.key) && canAddInputCell()) 
-        addInputCell(event.key);
-
-    // Decimal Point Pressed
-    if (event.key == ".") 
-        addDecimal();
+    if ((!isNaN(event.key) || event.key == ".") && canAddCharacter()) {
+        inputText += event.key;
+        updateInput();
+    }
 
     // Function Key Pressed
-    if (isFunctionKey(event.key) && canAddInputCell()) 
-        addFunctionCell(event.key);
+    if (isFunctionKey(event.key) && canAddCharacter()) {
+        inputText += addFunctionCharacter(event.key);
+        updateInput();
+    }
     
     // Back Space Pressed
     if (event.key == "Backspace") 
-        removeInputCell();
+        backspace();
 
     // Clear Pressed
     if (event.key.toLowerCase() == "c") 
-        clearInputCells();
+        clear();
 
     // Enter Pressed
     if (event.key == "Enter")
-        evaluate();
+        updateResult();
 }
 
 /* Button Pressed Event Listener Function */
 function pressButton(event) {
     if (shouldReset) {
-        clearInputCells();
+        clear();
         shouldReset = false;
     }
 
@@ -210,58 +104,79 @@ function pressButton(event) {
     const digit = getDigit(event.target.id);
 
     // Numeric Button Pressed
-    if (digit != null && canAddInputCell())
-        addInputCell(digit);
+    if (digit != null && canAddCharacter()) {
+        inputText += digit;
+        updateInput();
+    }
     
     // Decimal Point Button Pressed
-    else if (event.target.textContent == ".")
-        addDecimal();
+    else if (event.target.textContent == "." && canAddCharacter()) {
+        inputText += ".";
+        updateInput();
+    }
 
     // Function Button Pressed
-    else if (isFunctionKey(event.target.id, true) && canAddInputCell()) {
+    else if (isFunctionKey(event.target.id, true) && canAddCharacter()) {
         const functionKey = FUNCTION_KEYS[FUNCTION_STRS.indexOf(event.target.id)];
-        addFunctionCell(functionKey);
+        inputText += addFunctionCharacter(functionKey);
+        updateInput();
     }
     
     // Delete Button Pressed
     if (event.target.textContent == "DEL") 
-        removeInputCell();
+        backspace();
 
     // All Clear Button Pressed
     if (event.target.textContent == "AC") 
-        clearInputCells();
+        clear();
+
+    if (event.target.id == "pi" && canAddCharacter()) {
+        inputText += String.fromCharCode(960);
+        changeMargin(false);
+        updateInput();
+    }
+
+    if (event.target.id == "answer" && canAddCharacter(true)) {
+        inputText += "Ans"
+        updateInput();
+    }
 
     // Equate Button Pressed
     if (event.target.id == "equals")
-        evaluate();
+        updateResult();
 }
 
 /* Variables */
 // const calculator = require("./calculator")
+let inputText = "";
+let resultText = "";
+let solution = 0;
+let answer = 0;
+let idlePromptToggle = true;
+let shouldReset = false;
+
 const input = document.querySelector(".input");
 const result = document.querySelector(".result");
 const buttons = document.querySelectorAll(".numeric");
 const cancels = document.querySelectorAll(".cancel");
 const idlePrompt = document.createElement("div");
-let inputCells = [];
+const inputCell = document.createElement("div");
+changeMargin();
+inputCell.className = "data-cell";
 idlePrompt.className = "idle-prompt-cell";
 idlePrompt.textContent = "|"
-updateInputCells();
-
-let idlePromptToggle = true;
-let shouldReset = false;
+input.appendChild(inputCell);
+input.appendChild(idlePrompt);
 
 // Input & Result Screen Divisors
 const DATA_CELL_COUNT = 14;
-const MAX_WIDTH = 300;
+const MAX_WIDTH = 285;
 const BLINK_INTERVAL = 1000;
-const FUNCTION_KEYS = ["+", "-", "*", "/"];
-const FUNCTION_STRS = ["add", "minus", "multiply", "divide"];
 
 // Setup
 if (idlePromptToggle) setInterval(function () {
     idlePrompt.style.visibility = (idlePrompt.style.visibility == "hidden" ? "" : "hidden");
 }, BLINK_INTERVAL);
-document.body.addEventListener("keydown", keypressListener);
 buttons.forEach(button => {button.addEventListener('click', pressButton);});
 cancels.forEach(button => {button.addEventListener('click', pressButton);});
+document.body.addEventListener("keydown", keypressListener);
