@@ -1,10 +1,13 @@
 # odin-calculator
 Odin Foundations Project 5 - Calculator
 
-## Iteration 1 - UI Complete
-- A lot of the functionality is there, however I'm considering changing some of it.
+## Iteration 3 - Code & UI Clean Up
+ - Idea behind processing operations is largely the same as in iteration 2
+ - Cleaned up main and calculator code, and removed input-parser
+ - Reduced some buttons and input divs
+ - Link to current version: yona13.github.io/odin-calculator
 
-## Iteraton 2 - Operation Handling
+## Iteration 2 - Operation Handling
  - Improvement on how operations are handled
  - Operations are considered as scaled lists of real numbers that should be summed together
  - i.e. -9.2 * 7 - 6 / 2 + 1 + 1
@@ -21,3 +24,6 @@ Odin Foundations Project 5 - Calculator
 
  ### Bug
   - When a value is typed out with the button display, i.e. mouse clicks on the number buttons, and the result is "evaluated" using the enter button, i.e. keypress with enter, the display will not update with the answer, but the solution can be displayed on the console
+
+## Iteration 1 - UI Complete
+- A lot of the functionality is there, however I'm considering changing some of it.

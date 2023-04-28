@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculator</title>
     <script src="./scripts/calculator.js" defer></script>
-    <script src="./scripts/input-parser.js" defer></script>
     <script src="./scripts/main.js" defer></script>
     <link rel="stylesheet" href="./style.css">
 </head>
@@ -15,8 +14,12 @@
         <div class="calculator">
             <div class="screen">
                 <div class="info"></div>
-                <div class="input"></div>
-                <div class="result"></div>
+                <div class="input">
+                    <a class="input-text"></a>
+                </div>
+                <div class="result">
+                    <a class="result-text"></a>
+                </div>
             </div>
             <div class="controls">
                 <div class="numbers">
@@ -52,10 +55,9 @@
                     </div>
                     <div class="row three">
                         <button class="numeric" id="add">+</button>
-                        <button class="numeric" id="minus">-</button>
+                        <button class="numeric" id="subtract">-</button>
                     </div>
                     <div class="row four">
-                        <button class="numeric" id="answer">ANS</button>
                         <button class="numeric" id="equals">=</button>
                     </div>
                 </div>

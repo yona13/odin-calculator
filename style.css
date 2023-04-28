@@ -4,11 +4,6 @@ body {
     font-size: 18px;
 }
 
-@font-face {
-    font-family: 'digital-font';
-    src: url("./fonts/digital-7.ttf");
-}
-
 :root {
     --info-font-size: 6px;
     --screen-font-size: 36px;
@@ -33,12 +28,15 @@ body {
     padding: 8px;
     display: flex;
     flex-direction: column;
+    width: 80%;
+    max-width: 400px;
+    min-width: 250px;
 }
 
 .screen {
     background-color: #a8c64e;
     color: #3c412c;
-    font-family: "digital-font";
+    font-family: "system-ui";
     font-size: var(--screen-font-size);
     display: flex;
     flex-direction: column;
@@ -51,7 +49,7 @@ body {
     font-size: var(--info-font-size);
     min-height: var(--info-font-size);
     background-color: inherit;
-    width: 96%;
+    width: 94%;
     margin-bottom: 6px;
 }
 
@@ -82,25 +80,28 @@ body {
     gap: var(--button-space);
 }
 
-/* .function-cell, */
-.data-cell,
-.idle-prompt-cell {
-    padding: 0;
-}
-
-.idle-prompt-cell {
-    margin-top: 6px;
-    text-align: left;
-    min-width: var(--screen-font-width);
-    max-width: var(--screen-font-width);
-}
-
 .numbers,
 .functions {
+    /* width: 100%; */
     display: flex;
     flex-direction: column;
     gap: var(--button-space);
     margin-top: var(--button-space);
+}
+
+.additional-functions {
+    display: flex;
+    flex-direction: row;
+    gap: var(--button-space);
+    margin-top: var(--button-space);
+}
+
+.numbers {
+    width: 120%;
+}
+
+.functions {
+    width: 80%;
 }
 
 .row {
@@ -111,10 +112,13 @@ body {
 }
 
 .numeric,
-.cancel {
+.cancel,
+.black-buttons {
     font-size: var(--button-font-size);
     text-align: center;
-    width: 60px;
+    cursor: pointer;
+    outline: none;
+    width: 100%;
     height: 50px
 }
 
@@ -122,8 +126,12 @@ body {
     background-color: #ff6600;
 }
 
+.cancel:hover {
+    background-color: #f7ad19;
+}
+
 .variable {
-    font-family: cursive
+    font-style: italic;;
 }
 
 .footer {

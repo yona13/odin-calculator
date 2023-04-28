@@ -1,182 +1,186 @@
-/** Main Script for Calculator Project */
+/* -- Variables -- */
 
-let decimalPressed = false;  // prevents adding more than 1 decimal point
+let operation = generateOperations([]);
+let answer = 0;
+let inputValues = [];
+let resetResult = false;
+const input = document.querySelector(".input-text");
+const inputScreen = document.querySelector(".input");
+const result = document.querySelector(".result-text");
+const buttons = document.querySelectorAll("button");
 
-/* Functions */
+buttons.forEach(button => {button.addEventListener('click', buttonPressListener)});
+window.addEventListener('keydown', keyPressListerner);
 
-/* Get Digit Function */
-function getDigit(value) {
-    if (value.includes("digit")) {
-        let digit = value.replace("digit-", "");
-        return parseInt(digit);
+/* -- Functions -- */
+
+/**
+ * Can Add Function
+ * 
+ * Returns true if input width is less than screen width
+ * @returns {boolean}
+ */
+function canAdd() {
+    return input.offsetWidth + 20 < inputScreen.offsetWidth;
+}
+
+/**
+ * Add to Input Values Array Function
+ * 
+ * Update the current digit in input
+ * @param {string} value digit to update
+ */
+function addToInputValues(value) {
+    if (inputValues.length == 0) 
+        inputValues[0] = value;
+    else
+        inputValues[inputValues.length - 1] += value;
+}
+
+/**
+ * Update Input Display Function
+ * 
+ * Updates Input display (if possible) with value provided
+ * @param {string} value string representing value
+ * @param {boolean} buttonPress from buttonPressListener
+ * @param {boolean} isOperator value is an operator
+ */
+function updateInput(value, isOperator=false, buttonPress=true) {
+    // After pressing equals, clear input for user
+    if (resetResult) {
+        result.textContent = "";
+        resetResult = false;
     }
-    return null;
+
+    // Add Operation
+    if (isOperator) {
+        const operatorRepr = STRING_OPERATORS[buttonPress ? VALID_OPERATORS.indexOf(value) : KEY_OPERATORS.indexOf(value)];
+        inputValues[inputValues.length] = operatorRepr;
+        inputValues[inputValues.length] = "";
+        operation = generateOperations(inputValues);
+    } 
+    
+    // Otherwise add number
+    else {
+        if (buttonPress) {
+            if (value == "decimal-point") 
+                addToInputValues(".");
+            else if (value == "pi") 
+                addToInputValues(String.fromCharCode(960));
+            else 
+                addToInputValues(value.replace("digit-", ""));
+
+            operation = generateOperations(inputValues);
+        } else {}
+    }
+
+    let inputString = "";
+    inputValues.forEach(val => {inputString += val});
+    input.textContent = inputString;
+    document.querySelector(".calculator").click();
 }
 
-function changeMargin(enlarge=true) {
-    inputCell.setAttribute("style", `margin: ${enlarge ? 6 : 0}px 0px`);
+/**
+ * Update Result Function 
+ * 
+ * Updates the result screen by evaluating input in display
+ */
+function updateResult() {
+    let err = false;
+    if ("error" in operation) {
+        result.textContent = operation.error;
+        err = true;
+    } else {
+        let solution = evaluate(operation);
+        result.textContent = clip(solution.answer);
+    }
+
+    if (!err) {
+        inputValues = []
+        operation = generateOperations(inputValues);
+        resetResult = true;
+    }
 }
 
-/* Can Add Input Character */
-function canAddCharacter() {
-    return inputCell.offsetWidth < MAX_WIDTH;
-}
-
-/* Add Function Character Function */
-function addFunctionCharacter(value) {
-    if (value == "*" || value == "/") {
-        changeMargin(false);
-        return String.fromCharCode(value == "*" ? 215 : 247);
-    } else return value;
-}
-
-/* Remove String Character from Input */
+/**
+ * Backspace Function
+ * 
+ * Removes the last value (or from specified index) on input screen
+ * @param {number} index remove character from this index 
+ */
 function backspace(index=0) {
-    if (inputText.charCodeAt(inputCell.textContent.length - 1 - index) == 215 || inputCell.textContent.charCodeAt(inputCell.textContent.length - 1 - index) == 247) 
-        changeMargin();
-    inputText = inputText.substring(0, inputText.length - 1 - index);
-    updateInput();
+    // Only trim when there are values in Input Screen
+    if (inputValues.length > 0) {
+        let digits = inputValues[inputValues.length - 1 - index];
+
+        // Identify Function Values
+        if (digits.length == 0) {
+            inputValues.pop(); // pop empty string
+            digits = inputValues[inputValues.length - 1 - index]; // update digits value
+            if (STRING_OPERATORS.includes(digits)) 
+                inputValues.pop(); // pop function string
+        } 
+        
+        // Trim as normal
+        else {
+            digits = digits.substring(0, digits.length - 1 - index);
+            inputValues[inputValues.length - 1] = digits;
+
+            // Pop if first value and if string has no length
+            if (digits.length == 0 && inputValues.length == 1) inputValues.pop();
+        }
+    }
+    
+    operation = generateOperations(inputValues);
+    let inputString = "";
+    inputValues.forEach(val => {inputString += val});
+    input.textContent = inputString;
 }
 
-/* Clear Function */
+/**
+ * Clear Function
+ * 
+ * Clears the Input and the Results Screens
+ */
 function clear() {
-    changeMargin();
-    inputText = "";
-    solution = 0;
-    inputCell.textContent = "";
+    inputValues = [];
+    operation = generateOperations([]);
+    input.textContent = "";
     result.textContent = "";
 }
 
-/* Update Input Function */
-function updateInput() {
-    inputCell.textContent = inputText;
+/**
+ * Button Click Event Listener
+ * 
+ * Update Input or Result Display depending on Buttons pressed
+ * @param {object} event click event
+ */
+function buttonPressListener(event) {
+    if (canAdd()){
+        if (event.target.id.includes("digit-") || event.target.id == "decimal-point" || event.target.id == "pi") updateInput(event.target.id);
+
+        if (VALID_OPERATORS.includes(event.target.id.toLowerCase())) updateInput(event.target.id.toLowerCase(), true);
+    }
+
+    if (event.target.id == "equals") updateResult();
+
+    if (event.target.id == "delete") backspace();
+
+    if (event.target.id == "clear") clear();
 }
 
-/* Update Result Function */
-function updateResult() {
-    console.log(inputText)
-    solution = evaluate(inputText + "|", answer);
-    shouldReset = !isNaN(solution);
-    if (shouldReset) answer = solution;
-    result.textContent = solution;
+function keyPressListerner(event) {
+    if (canAdd()) {
+        if (!isNaN(event.key) || event.key == "." || event.key == "p")
+            updateInput(event.key == "p" ? "pi" : event.key);
+
+        if (KEY_OPERATORS.includes(event.key))
+            updateInput(event.key, true, false);
+    }
+
+    if (event.key.toLowerCase() == "=") updateResult();
+
+    if (event.key.toLowerCase() == "backspace") backspace();
+
+    if (event.key.toLowerCase() == "a" || event.key.toLowerCase() == "c") clear();
 }
-
-/* Keydown Event Listener Function */
-function keypressListener(event) {
-    if (shouldReset) {
-        clear();
-        shouldReset = false;
-    }
-
-    // Numeric key Pressed
-    if ((!isNaN(event.key) || event.key == ".") && canAddCharacter()) {
-        inputText += event.key;
-        updateInput();
-    }
-
-    // Function Key Pressed
-    if (isFunctionKey(event.key) && canAddCharacter()) {
-        inputText += addFunctionCharacter(event.key);
-        updateInput();
-    }
-    
-    // Back Space Pressed
-    if (event.key == "Backspace") 
-        backspace();
-
-    // Clear Pressed
-    if (event.key.toLowerCase() == "c") 
-        clear();
-
-    // Enter Pressed
-    if (event.key == "Enter")
-        updateResult();
-}
-
-/* Button Pressed Event Listener Function */
-function pressButton(event) {
-    if (shouldReset) {
-        clear();
-        shouldReset = false;
-    }
-
-    // console.log(event.target.id)
-    const digit = getDigit(event.target.id);
-
-    // Numeric Button Pressed
-    if (digit != null && canAddCharacter()) {
-        inputText += digit;
-        updateInput();
-    }
-    
-    // Decimal Point Button Pressed
-    else if (event.target.textContent == "." && canAddCharacter()) {
-        inputText += ".";
-        updateInput();
-    }
-
-    // Function Button Pressed
-    else if (isFunctionKey(event.target.id, true) && canAddCharacter()) {
-        const functionKey = FUNCTION_KEYS[FUNCTION_STRS.indexOf(event.target.id)];
-        inputText += addFunctionCharacter(functionKey);
-        updateInput();
-    }
-    
-    // Delete Button Pressed
-    if (event.target.textContent == "DEL") 
-        backspace();
-
-    // All Clear Button Pressed
-    if (event.target.textContent == "AC") 
-        clear();
-
-    if (event.target.id == "pi" && canAddCharacter()) {
-        inputText += String.fromCharCode(960);
-        changeMargin(false);
-        updateInput();
-    }
-
-    if (event.target.id == "answer" && canAddCharacter(true)) {
-        inputText += "Ans"
-        updateInput();
-    }
-
-    // Equate Button Pressed
-    if (event.target.id == "equals")
-        updateResult();
-}
-
-/* Variables */
-// const calculator = require("./calculator")
-let inputText = "";
-let resultText = "";
-let solution = 0;
-let answer = 0;
-let idlePromptToggle = true;
-let shouldReset = false;
-
-const input = document.querySelector(".input");
-const result = document.querySelector(".result");
-const buttons = document.querySelectorAll(".numeric");
-const cancels = document.querySelectorAll(".cancel");
-const idlePrompt = document.createElement("div");
-const inputCell = document.createElement("div");
-changeMargin();
-inputCell.className = "data-cell";
-idlePrompt.className = "idle-prompt-cell";
-idlePrompt.textContent = "|"
-input.appendChild(inputCell);
-input.appendChild(idlePrompt);
-
-// Input & Result Screen Divisors
-const DATA_CELL_COUNT = 14;
-const MAX_WIDTH = 285;
-const BLINK_INTERVAL = 1000;
-
-// Setup
-if (idlePromptToggle) setInterval(function () {
-    idlePrompt.style.visibility = (idlePrompt.style.visibility == "hidden" ? "" : "hidden");
-}, BLINK_INTERVAL);
-buttons.forEach(button => {button.addEventListener('click', pressButton);});
-cancels.forEach(button => {button.addEventListener('click', pressButton);});
-document.body.addEventListener("keydown", keypressListener);
