@@ -5,7 +5,7 @@ Odin Foundations Project 5 - Calculator
  - Idea behind processing operations is largely the same as in iteration 2
  - Cleaned up main and calculator code, and removed input-parser
  - Reduced some buttons and input divs
- - Link to current version: yona13.github.io/odin-calculator
+ - Link to current version: https://yona13.github.io/odin-calculator/
 
 ## Iteration 2 - Operation Handling
  - Improvement on how operations are handled
